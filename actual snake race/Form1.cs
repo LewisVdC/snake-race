@@ -18,12 +18,12 @@ namespace actual_snake_race
         Brush checker1 = new SolidBrush(Color.White);
         Brush checker2 = new SolidBrush(Color.Black);
         Graphics paper;
-        int[] snakepos = new int[5];
         Random rand = new Random();
         int counter = 0;
         int gamble = 0;
         int money = 100;
         int gambleamount = 0;
+        int[] snakepos;
 
         public Form1()
         {
@@ -39,6 +39,7 @@ namespace actual_snake_race
                 return;
             }
             timer1.Start();
+
             draw();
         }
 
@@ -48,14 +49,14 @@ namespace actual_snake_race
 
             if (counter >= 50)
             {
-                int index = rand.Next(0, 5);
+                int index = rand.Next(0, Convert.ToInt32(textBox3.Text));
 
                 snakepos[index] -= 55;
 
                 draw();
                 counter = 0;
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < Convert.ToInt32(textBox3.Text); i++)
                 {
                     if (snakepos[i] <= -55 * 9)
                     {
@@ -78,7 +79,7 @@ namespace actual_snake_race
                             MessageBox.Show("you are broke, you lose");
                             Application.Exit();
                         }
-                        for (int ii = 0; ii < 5; ii++)
+                        for (int ii = 0; ii < Convert.ToInt32(textBox3.Text); ii++)
                         {
                             snakepos[ii] = 0;
                         }
@@ -95,7 +96,7 @@ namespace actual_snake_race
             label3.Text = "geld: " + money;
             for (int i = 0; i < 5; i++)
             {
-                for (int ii = 0; ii < 75; ii++)
+                for (int ii = 0; ii < 15 + Convert.ToInt32(textBox3.Text) * 20; ii++)
                 {
                     if (i % 2 == 1)
                     {
@@ -121,7 +122,7 @@ namespace actual_snake_race
                     }
                 }
             }
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < Convert.ToInt32(textBox3.Text); i++)
             {
                 for (int ii = 0; ii < 5; ii++)
                 {
@@ -159,6 +160,12 @@ namespace actual_snake_race
                 {
                     gambleamount = Convert.ToInt32(textBox2.Text);
                     money -= gambleamount;
+
+                    snakepos = new int[Convert.ToInt32(textBox3.Text)];
+                    for (int i = 0; i < Convert.ToInt32(textBox3.Text); i++)
+                    {
+                        snakepos[i] = 0;
+                    }
                 }
                 else
                 {
