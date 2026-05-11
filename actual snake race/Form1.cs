@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 
 namespace actual_snake_race
 {
@@ -29,6 +30,58 @@ namespace actual_snake_race
         {
             InitializeComponent();
             paper = pictureBox1.CreateGraphics();
+            load();
+            if (money == 0)
+            {
+                MessageBox.Show("you have no money, take a loan (dw abt paying it back)");
+                money += 100;
+            }
+            label3.Text = "geld: " + money;
+            save();
+        }
+
+        private string conection()
+        {
+            return @"Data Source=127.0.0.1; Initial Catalog=snake; User ID=root; Password=root";
+        }
+
+        private void load()
+        {
+            string connectionstring = conection();
+            MySqlConnection connection = new MySqlConnection(connectionstring);
+            connection.Open();
+
+            MySqlCommand command = connection.CreateCommand();
+            command.CommandText = "SELECT amount FROM transactions LIMIT 1;";
+
+            object result = command.ExecuteScalar();
+            if (result != null)
+            {
+                money = Convert.ToInt32(result);
+            }
+
+            connection.Close();
+        }
+
+        private void save()
+        {
+            string connectionstring = conection();
+            MySqlConnection connection = new MySqlConnection(connectionstring);
+            connection.Open();
+
+            MySqlCommand command = connection.CreateCommand();
+            command.CommandText = "UPDATE transactions SET amount = @amount WHERE id = 1;";
+            command.Parameters.AddWithValue("@amount", money);
+
+            int rowsAffected = command.ExecuteNonQuery();
+
+            if (rowsAffected == 0)
+            {
+                command.CommandText = "INSERT INTO transactions (id, amount) VALUES (1, @amount);";
+                command.ExecuteNonQuery();
+            }
+
+            connection.Close();
         }
 
         private void startbutton_Click(object sender, EventArgs e)
@@ -65,7 +118,7 @@ namespace actual_snake_race
                         if (i + 1 == gamble)
                         {
                             MessageBox.Show("Snake " + (i + 1) + " wins!, you win ");
-                            money += gambleamount * 2;
+                            money += gambleamount * Convert.ToInt32(textBox3.Text);
                         }
                         else
                         {
@@ -73,6 +126,7 @@ namespace actual_snake_race
                         }
                         gamble = 0;
                         gambleamount = 0;
+                        save();
 
                         if (money == 0)
                         {
@@ -166,13 +220,13 @@ namespace actual_snake_race
                     {
                         snakepos[i] = 0;
                     }
+                    save();
+                    draw();
                 }
                 else
                 {
                     MessageBox.Show("broooke");
                 }
-
-                draw();
             }
             else
             {
